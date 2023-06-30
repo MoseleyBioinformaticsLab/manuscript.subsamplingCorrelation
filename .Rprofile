@@ -9,16 +9,16 @@ options(repos=structure(c(CRAN="https://cloud.r-project.org")),
         tibble.width = Inf,
         tibble.print_min = 20)
 
-system2("clear")
-cat("\014")
-cli::cli_alert(R.version.string)
-cli::cli_alert(paste("Running under", utils::osVersion))
-cli::cli_alert(paste("System time is", as.character(lubridate::now())))
+# system2("clear")
+# cat("\014")
+# cli::cli_alert(R.version.string)
+# cli::cli_alert(paste("Running under", utils::osVersion))
+# cli::cli_alert(paste("System time is", as.character(lubridate::now())))
+# 
 
-
-setHook(packageEvent("grDevices", "onLoad"),
-        function(...) grDevices::X11.options(type='cairo'))
-options(device='x11')
+# setHook(packageEvent("grDevices", "onLoad"),
+#         function(...) grDevices::X11.options(type='cairo'))
+# options(device='x11')
 
 q = function (save = 'no', ...) base::q(save = save, ...)
 
