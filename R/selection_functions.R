@@ -41,7 +41,7 @@ pca_select = function(pca_data, matrix_data, fraction){
   count_load = 1
   current_pc = 1
   while ((count_load < n_item) && (current_pc %in% use_pcs$pc_num)) {
-    message(current_pc)
+    #message(current_pc)
     use_loadings = pca_data$rotation[, current_pc]
     names(use_loadings) = tmp_names
     use_loadings = sort(abs(use_loadings), decreasing = TRUE)
