@@ -21,10 +21,15 @@ var_select = function(pca_data, matrix_data, fraction){
 }
 
 pca_select = function(pca_data, matrix_data, fraction){
+  # pca_data = tar_read(transcript_pca)
+  # matrix_data = tar_read(transcript_data)
+  # fraction = 0.5
   n_item = round(fraction * nrow(matrix_data))
   pc_cont = visqc_score_contributions(as.matrix(pca_data$x))
-  use_pcs = dplyr::filter(pc_cont, cumulative <= 0.95)
-  use_pcs$n_row = round(n_item * use_pcs$percent)
+  use_pcs = dplyr::filter(pc_cont, cumulative <= 0.95) |>
+    dplyr::mutate(relative = percent / max(cumulative),
+                  n_row = round(n_item * relative),
+                  pc_num = as.numeric(gsub("PC", "", pc))) 
   use_rows = vector("character", n_item)
   
   if (is.null(rownames(matrix_data))) {
@@ -34,30 +39,34 @@ pca_select = function(pca_data, matrix_data, fraction){
   }
   
   count_load = 1
-  use_pc = 1
-  while (count_load < n_item) {
-    use_loadings = pca_data$rotation[, use_pc]
+  current_pc = 1
+  while ((count_load < n_item) && (current_pc %in% use_pcs$pc_num)) {
+    message(current_pc)
+    use_loadings = pca_data$rotation[, current_pc]
     names(use_loadings) = tmp_names
     use_loadings = sort(abs(use_loadings), decreasing = TRUE)
     use_loadings = use_loadings[!(names(use_loadings) %in% use_rows)]
-    use_loc = seq(count_load, count_load + use_pcs$n_row[use_pc] - 1)
+    use_loc = seq(count_load, count_load + use_pcs$n_row[current_pc] - 1)
     use_loc = use_loc[use_loc <= n_item]
     load_loc = seq(1, length(use_loc))
     use_rows[use_loc] = names(use_loadings[load_loc])
     count_load = use_loc[length(use_loc)] + 1
+    current_pc = current_pc + 1
   }
+  use_rows = use_rows[nchar(use_rows) > 0]
   list(data = matrix_data[use_rows, ],
        type = "pca",
        frac = fraction)
 }
 
-select_random = function(matrix_data, fraction){
+random_select = function(pca_data, matrix_data, fraction){
   n_item = round(fraction * nrow(matrix_data))
   use_rows = sample(nrow(matrix_data), n_item)
   list(data = matrix_data[use_rows, ],
        type = "random",
        frac = fraction)
 }
+
 
 run_fractional_correlation = function(in_data){
   cor = ici_kendalltau(t(in_data$data))
