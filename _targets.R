@@ -24,12 +24,12 @@ adenocarcinoma_related = tar_plan(
              "data/recount_adeno_counts.rds",
              format = "file"),
   adenocarcinoma_data = readRDS(adeno_file),
-  adenocarcinoma_pca = prcomp(t(log1p(transcript_data)), center = TRUE, scale. = FALSE),
+  adenocarcinoma_pca = prcomp(t(log1p(adenocarcinoma_data)), center = TRUE, scale. = FALSE),
   
-  adenocarcinoma_na = zero_to_na(transcript_data),
+  adenocarcinoma_na = zero_to_na(adenocarcinoma_data),
   
-  ici_adenocarcinoma_cor = ici_kendalltau(t(transcript_na)),
-  ici_transcript_completeness = pairwise_completeness(t(transcript_na)),
+  ici_adenocarcinoma_cor = ici_kendalltau(t(adenocarcinoma_na)),
+  ici_transcript_completeness = pairwise_completeness(t(adenocarcinoma_na)),
 )
 
 adenocarcinoma_run_map = tar_map(unlist = FALSE,
